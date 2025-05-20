@@ -1,7 +1,7 @@
 volumes:
-  ninja_demo_local_postgres_data: {}
-  ninja_demo_local_postgres_data_backups: {}
-  ninja_demo_local_redis_data: {}
+  ninja_hosts_local_postgres_data: {}
+  ninja_hosts_local_postgres_data_backups: {}
+  ninja_hosts_local_redis_data: {}
 
 
 services:
@@ -9,8 +9,8 @@ services:
     build:
       context: .
       dockerfile: ./compose/local/django/Dockerfile
-    image: ninja_demo_local_django
-    container_name: ninja_demo_local_django
+    image: ninja_hosts_local_django
+    container_name: ninja_hosts_local_django
     depends_on:
       - postgres
     volumes:
@@ -27,11 +27,11 @@ services:
     build:
       context: .
       dockerfile: ./compose/production/postgres/Dockerfile
-    image: ninja_demo_production_postgres
-    container_name: ninja_demo_local_postgres
+    image: ninja_hosts_production_postgres
+    container_name: ninja_hosts_local_postgres
     volumes:
-      - ninja_demo_local_postgres_data:/var/lib/postgresql/data
-      - ninja_demo_local_postgres_data_backups:/backups
+      - ninja_hosts_local_postgres_data:/var/lib/postgresql/data
+      - ninja_hosts_local_postgres_data_backups:/backups
     env_file:
       - .env
     ports:
@@ -40,15 +40,15 @@ services:
 
   redis:
     image: docker.io/redis:6
-    container_name: ninja_demo_local_redis
+    container_name: ninja_hosts_local_redis
     volumes:
-      - ninja_demo_local_redis_data:/data
+      - ninja_hosts_local_redis_data:/data
 
 
   celeryworker:
     <<: *django
-    image: ninja_demo_local_celeryworker
-    container_name: ninja_demo_local_celeryworker
+    image: ninja_hosts_local_celeryworker
+    container_name: ninja_hosts_local_celeryworker
     depends_on:
       - redis
       - postgres
@@ -57,8 +57,8 @@ services:
 
   celerybeat:
     <<: *django
-    image: ninja_demo_local_celerybeat
-    container_name: ninja_demo_local_celerybeat
+    image: ninja_hosts_local_celerybeat
+    container_name: ninja_hosts_local_celerybeat
     depends_on:
       - redis
       - postgres
@@ -67,8 +67,8 @@ services:
 
   flower:
     <<: *django
-    image: ninja_demo_local_flower
-    container_name: ninja_demo_local_flower
+    image: ninja_hosts_local_flower
+    container_name: ninja_hosts_local_flower
     ports:
       - '5555:5555'
     command: /start-flower

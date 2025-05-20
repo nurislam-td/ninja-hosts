@@ -1,9 +1,9 @@
 volumes:
-  production_postgres_ninja_demo_data: {}
-  production_postgres_ninja_demo_data_backups: {}
-  production_ninja_demo_media: {}
-  production_ninja_demo_static: {}
-  production_redis_ninja_demo_data: {}
+  production_postgres_ninja_hosts_data: {}
+  production_postgres_ninja_hosts_data_backups: {}
+  production_ninja_hosts_media: {}
+  production_ninja_hosts_static: {}
+  production_redis_ninja_hosts_data: {}
 
 
 
@@ -13,10 +13,10 @@ services:
       context: .
       dockerfile: ./compose/production/django/Dockerfile
 
-    image: ninja_demo_production_ninja_demo
+    image: ninja_hosts_production_ninja_hosts
     volumes:
-      - production_ninja_demo_media:/app/ninja_demo/media
-      - production_ninja_demo_static:/app/staticfiles
+      - production_ninja_hosts_media:/app/ninja_hosts/media
+      - production_ninja_hosts_static:/app/staticfiles
     depends_on:
       - postgres
       - redis
@@ -30,10 +30,10 @@ services:
     build:
       context: .
       dockerfile: ./compose/production/postgres/Dockerfilje
-    image: ninja_demo_production_postgres
+    image: ninja_hosts_production_postgres
     volumes:
-      - production_postgres_ninja_demo_data:/var/lib/postgresql/data
-      - production_postgres_ninja_demo_data_backups:/backups
+      - production_postgres_ninja_hosts_data:/var/lib/postgresql/data
+      - production_postgres_ninja_hosts_data_backups:/backups
     env_file:
       - .env
 
@@ -41,24 +41,24 @@ services:
   redis:
     image: docker.io/redis:6
     volumes:
-      - production_redis_ninja_demo_data:/data
+      - production_redis_ninja_hosts_data:/data
 
 
   celeryworker:
     <<: *django
-    image: ninja_demo_production_celeryworker
+    image: ninja_hosts_production_celeryworker
     command: /start-celeryworker
     ports: [ ]
 
   celerybeat:
     <<: *django
-    image: ninja_demo_production_celerybeat
+    image: ninja_hosts_production_celerybeat
     command: /start-celerybeat
     ports: [ ]
 
   flower:
     <<: *django
-    image: ninja_demo_production_flower
+    image: ninja_hosts_production_flower
     command: /start-flower
     ports:
       - "9055:5555"
@@ -67,12 +67,12 @@ services:
     build:
       context: .
       dockerfile: ./compose/production/nginx/Dockerfile
-    image: ninja_demo_production_nginx
+    image: ninja_hosts_production_nginx
     depends_on:
       - django
     volumes:
-      - production_ninja_demo_media:/usr/share/nginx/media:ro
-      - production_ninja_demo_static:/usr/share/nginx/static:ro
+      - production_ninja_hosts_media:/usr/share/nginx/media:ro
+      - production_ninja_hosts_static:/usr/share/nginx/static:ro
     ports:
       - "9011:80"
  
